@@ -1,0 +1,6 @@
+{
+  "yaml.schemas": {
+    "file:///home/fabian/.vscode/extensions/docsmsft.docs-yaml-1.0.4/dist/toc.schema.json": "/toc\\.yml/i",
+    "https://json.schemastore.org/yamllint.json": "file:///home/fabian/Projects/317%20Schober%20Classification/%C2%B0%20Documents/schober_classifiation.yaml"
+  }
+}

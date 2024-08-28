@@ -174,29 +174,30 @@ def create_folder_structure(base_dir, classification_dict, level=0, max_levels=1
         return
 
     for code, details in classification_dict.items():
-        # Determine directory name
-        if isinstance(details, dict) and "description" in details:
-            dir_name = f"{code} - {details['description'][:150]}"
-        else:
-            dir_name = f"{code} - {str(details)[:150]}"
-
-        # Create the directory
-        current_dir = os.path.join(base_dir, dir_name)
-        os.makedirs(current_dir, exist_ok=True)
-
-        # Recursively create subdirectories if 'subclasses' exist
         if isinstance(details, dict):
-            if "subclasses" in details:
-                create_folder_structure(
-                    current_dir, details["subclasses"], level + 1, max_levels
+            # If the value is a dict, iterate through its items
+            for sub_key, sub_value in details.items():
+                # Construct directory name
+                dir_name = (
+                    f"{code}{sub_key} {sub_value}"
+                    if isinstance(sub_value, str)
+                    else f"{code}{sub_key}"
                 )
-            else:
-                # Recursively process any further nested dictionaries
-                for sub_key, sub_value in details.items():
-                    if isinstance(sub_value, dict):
-                        create_folder_structure(
-                            current_dir, {sub_key: sub_value}, level + 1, max_levels
-                        )
+                current_dir = os.path.join(base_dir, dir_name)
+                os.makedirs(current_dir, exist_ok=True)
+                print(f"Created directory: {current_dir}")
+
+                # If further nesting exists, call recursively
+                if isinstance(sub_value, dict):
+                    create_folder_structure(
+                        current_dir, sub_value, level + 1, max_levels
+                    )
+        else:
+            # When details is not a dictionary, it represents the folder name
+            dir_name = f"{code} {details}".strip()
+            current_dir = os.path.join(base_dir, dir_name)
+            os.makedirs(current_dir, exist_ok=True)
+            print(f"Created directory: {current_dir}")
 
 
 def create_external_folder_structure(
