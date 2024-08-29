@@ -2,6 +2,8 @@
 
 > A tool to create and customize classification schemes like the Library of Congress Classification.
 
+!This tool is stil under heavy development!
+
 ## Description
 
 For years I have been fiddling around with organizing my personal collections of books and notes. Folder Structures emerged but were not consistent through media, due to time and the sheer amount of data. This was until I stumbled across the field of Libray Sciences and the science of classification.

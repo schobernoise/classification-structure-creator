@@ -4,15 +4,6 @@ import argparse
 
 
 def create_folder_structure(base_dir, classification_dict, level=0, max_levels=10):
-    """
-    Recursively creates a folder structure based on a nested classification dictionary.
-
-    Args:
-        base_dir (str): The base directory where the folder structure will be created.
-        classification_dict (dict): The classification dictionary to convert into folders.
-        level (int): The current recursion level.
-        max_levels (int): The maximum recursion levels allowed (default is 10).
-    """
     if level > max_levels:
         return
 
