@@ -26,7 +26,6 @@ def target_to_filelist(target_dir):
                 )
     return pdf_files
 
-
 def dest_to_dirlist(dirlist_dir):
     dirs = []
     for root, dirs, files in os.walk(dirlist_dir, topdown=False):
@@ -47,7 +46,7 @@ def pdf_existing_metadata_extractor(pdf_file):
     pdf_file["subject"] = pdf_meta.subject
     pdf_file["isbn"] = extract_isbns(reader)
 
-    print(pdf_file)
+    # print(pdf_file)
 
 def extract_isbns(reader):
 
@@ -66,14 +65,52 @@ def extract_isbns(reader):
     # print(isbns)
 
     # Extract only the portions with numbers and dashes
-    isbns_cleaned = [isbn[0] for isbn in isbns if isbn is not '']
+    isbns_cleaned = [isbn[0] for isbn in isbns if isbn != '']
 
     return isbns_cleaned
 
 def pdf_metadata_completion(pdf_file):
-    basic_infos(pdf_file["isbn"])
 
-def basic_infos(isbn):
+    basic_infos_obj = fetch_basic_infos(pdf_file["isbn"])
+    # extended_infos_obj = open_library_search(pdf_file)
+    # print(basic_infos_obj)
+
+    pdf_file["title" ]= basic_infos_obj["title"]
+    pdf_file["author"] = basic_infos_obj["authors"]
+    pdf_file["subject"] = basic_infos_obj["subject"]
+    pdf_file["categories"] = basic_infos_obj["categories"],
+
+def write_to_pdf(pdf_file):
+
+     # ! This Function writes to file !
+
+    reader = PdfReader(pdf_file["filepath"])
+    writer = PdfWriter()
+
+    # Add all pages to the writer
+    for page in reader.pages:
+        writer.add_page(page)
+
+    # If you want to add the old metadata, include these two lines
+    if reader.metadata is not None:
+        writer.add_metadata(reader.metadata)
+
+    writer.add_metadata(
+    {
+        "/Author": pdf_file["author"],
+        "/Title": pdf_file["title"],
+        "/Subject": pdf_file["categories"],
+        "/Isbn-10": pdf_file["ISBN_10"], # TODO: Split ISBN Object into 10 and 13
+        "/Isbn-13": pdf_file["ISBN_13"],
+
+    }
+    )
+
+    # Save the new PDF to a file
+    with open(pdf_file["filepath"], "wb") as f:
+        writer.write(f)
+
+def fetch_basic_infos(isbn):
     base_api_link = "https://www.googleapis.com/books/v1/volumes?q=isbn:"
 
     with urllib.request.urlopen(base_api_link + isbn[1]) as f:
@@ -81,16 +118,25 @@ def basic_infos(isbn):
 
     decoded_text = text.decode("utf-8")
     obj = json.loads(decoded_text) # deserializes decoded_text to a Python object
-    print(obj["items"])
+    # print(obj["items"])
+    return obj["items"]
 
 def open_library_search(pdf_file):
     # https://openlibrary.org/dev/docs/api/books
-    pass
+
+    openlibrary_api_link = "https://openlibrary.org/search.json?q="
+
+    with urllib.request.urlopen(openlibrary_api_link + isbn[1]) as f:
+        text = f.read()
+
+    decoded_text = text.decode("utf-8")
+    obj = json.loads(decoded_text) # deserializes decoded_text to a Python object
+    # print(obj["items"])
+    return obj["docs"][0]
 
 def create_markdown_file(pdf_file):
     # Write isbn and all additional infos in there
     pass
-
 
 def main(args):
     """ Main entry point of the app """
@@ -103,7 +149,6 @@ def main(args):
             print("processing file", file)
             pdf_existing_metadata_extractor(file)
             pdf_metadata_completion(file)
-
 
 
 if __name__ == "__main__":
