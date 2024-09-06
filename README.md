@@ -32,12 +32,22 @@ options:
 You can also start with a blank yaml, just keep the following structure:
 
 ```yaml
-B:
-  name: "Geisteswissenschaften"
+I:
+  name: 
+    name: "Informatik"
   subclasses:
-        - B000: "Philosophie"
+        - I000: 
+          name: "Informationstechnologie"
           subclasses:
-            - B000a: "Logik"
+            - I000a: 
+              name: "Verarbeitung & Speicherung von Daten"
+            - I000b: 
+              name: "Systeme, Speichergeräte, Speichereinrichtungen"
+            - I000c: 
+              name: "Hardware"
+              subclasses:
+                - I000cI: 
+                  name: "Prozessoren"
 ```
 
 ## Dependencies
