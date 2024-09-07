@@ -12,7 +12,6 @@ __license__ = "MIT"
 target_filelist = []
 dest_dirlist = []
 
-
 def target_to_filelist(target_dir):
     pdf_files = []
     for root, dirs, files in os.walk(target_dir, topdown=False):
@@ -139,16 +138,22 @@ def create_markdown_file(pdf_file):
     pass
 
 def main(args):
-    """ Main entry point of the app """
 
-    target_filelist = target_to_filelist(args.target_dir)
-    # dest_dirlist = dest_to_dirlist(args.dest_dir)
+    if args.target_dir and args.dest_dir:
 
-    for file in target_filelist:
-        if file["filepath"].endswith(".pdf"):
-            print("processing file", file)
-            pdf_existing_metadata_extractor(file)
-            pdf_metadata_completion(file)
+        target_filelist = target_to_filelist(args.target_dir)
+        # dest_dirlist = dest_to_dirlist(args.dest_dir)
+
+        for file in target_filelist:
+            if file["filepath"].endswith(".pdf"):
+                print("processing file", file)
+                pdf_existing_metadata_extractor(file)
+                pdf_metadata_completion(file)
+    
+    elif args.target_file:
+        pdf_existing_metadata_extractor(args.target_file)
+        pdf_metadata_completion(args.target_file)
+
 
 
 if __name__ == "__main__":
@@ -181,6 +186,10 @@ if __name__ == "__main__":
         "--dest_dir",
         help="Destination Dir, in which the files get sorted.", action="store", dest="dest_dir")
     
-    
+    parser.add_argument(
+        "-f",
+        "--target_file",
+        help="Target File to process.", action="store", dest="target_file")
+     
     args = parser.parse_args()
     main(args)
